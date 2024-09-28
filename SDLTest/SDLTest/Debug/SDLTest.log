@@ -1,2 +1,5 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SDLTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  SDLTest.vcxproj -> C:\Users\justi\Desktop\SDLTest\Debug\SDLProject.exe
+  main.cpp
+  ShaderProgram.cpp
+  Generating Code...
+  SDLTest.vcxproj -> C:\Users\justi\GPP\2D-Scene\SDLTest\Debug\SDLProject.exe

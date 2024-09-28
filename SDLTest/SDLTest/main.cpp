@@ -48,11 +48,13 @@ constexpr GLint NUMBER_OF_TEXTURES = 1, // to be generated, that is
 LEVEL_OF_DETAIL = 0, // mipmap reduction image level
 TEXTURE_BORDER = 0; // this value MUST be zero
 
-//sources
-// https://www.cleanpng.com/png-monster-ooze-clip-art-slime-765988/
-//https://stock.adobe.com/images/strong-stream-of-water-on-an-isolated-white-background/287250833
-//https://www.vecteezy.com/free-photos/mars-background
-//https://stock.adobe.com/images/photo-of-a-blobfish-blob-fish-known-as-the-world-s-ugliest-deep-sea-creature/533987284
+/*sources
+https://www.cleanpng.com/png-monster-ooze-clip-art-slime-765988/
+https://stock.adobe.com/images/strong-stream-of-water-on-an-isolated-white-background/287250833
+https://www.vecteezy.com/free-photos/mars-background
+https://stock.adobe.com/images/photo-of-a-blobfish-blob-fish-known-as-the-world-s-ugliest-deep-sea-creature/533987284
+https://www.neatoshop.com/product/Rainbow-Mirrored-1970s-Disco-Ball
+*/
 constexpr char FISH_FILEPATH[] = "fish.png",
 SLIME_FILEPATH[] = "slime.png",
 WATER_STREAM_FILEPATH[] = "water_stream.png",
@@ -106,20 +108,14 @@ g_ball_id;
 
 // ——————————— GLOBAL VARS AND CONSTS FOR TRANSFORMATIONS ——————————— //
 constexpr float BASE_SCALE = 1.0f,      // The unscaled size of your object
-                MAX_AMPLITUDE = 0.1f,  //  Scale up/down
-                PULSE_SPEED = 10.0f;    // How fast mars and slime will beat
+MAX_AMPLITUDE = 0.1f,  //  Scale up/down
+PULSE_SPEED = 10.0f;    // How fast mars and slime will beat
 
-constexpr float RADIUS = 2.0f;      // radius of your circle
-constexpr float ORBIT_SPEED = 1.0f;  // rotational speed
+
 constexpr float ROT_INCREMENT = 5.0f; // rotation speed
-
-float       g_angle = 0.0f;     // current angle
-float       g_x_offset = 0.0f, // current x and y coordinates
-            g_y_offset = 0.0f;
 
 float g_previous_ticks = 0.0f;
 float g_pulse_time = 0.0f;
-float x_pos = 0.0f;
 
 float wait_time = 10.0f;
 
@@ -183,9 +179,9 @@ void initialise()
     //initialize matrices
     g_fish_matrix = glm::mat4(1.0f);
     g_slime_matrix = glm::mat4(1.0f);
-	g_mars_matrix = glm::mat4(1.0f);
-	g_water_stream_matrix = glm::mat4(1.0f);
-	g_ball_matrix = glm::mat4(1.0f);
+    g_mars_matrix = glm::mat4(1.0f);
+    g_water_stream_matrix = glm::mat4(1.0f);
+    g_ball_matrix = glm::mat4(1.0f);
     g_view_matrix = glm::mat4(1.0f);
 
 
@@ -199,12 +195,12 @@ void initialise()
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
 
-	//load textures
-	g_fish_id = load_texture(FISH_FILEPATH);
-	g_slime_id = load_texture(SLIME_FILEPATH);
-	g_mars_id = load_texture(MARS_FILEPATH);
-	g_water_stream_id = load_texture(WATER_STREAM_FILEPATH);
-	g_ball_id = load_texture(BALL_FILEPATH);
+    //load textures
+    g_fish_id = load_texture(FISH_FILEPATH);
+    g_slime_id = load_texture(SLIME_FILEPATH);
+    g_mars_id = load_texture(MARS_FILEPATH);
+    g_water_stream_id = load_texture(WATER_STREAM_FILEPATH);
+    g_ball_id = load_texture(BALL_FILEPATH);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -233,69 +229,68 @@ void update()
 
     g_pulse_time += delta_time * PULSE_SPEED; // Scale the pulse speed by delta_time
     float scale_factor = BASE_SCALE + MAX_AMPLITUDE * glm::sin(g_pulse_time); // Use sine for a smoother pulse
-    float larger_scale_factor = BASE_SCALE + 4*MAX_AMPLITUDE * glm::sin(g_pulse_time); // Use sine for a smoother pulse
+    float larger_scale_factor = BASE_SCALE + 4 * MAX_AMPLITUDE * glm::sin(g_pulse_time); // Gives a bigger beat
 
     /* Game logic */
     g_translation_fish.x += ROT_INCREMENT * delta_time;
-	g_translation_fish.y += ROT_INCREMENT * delta_time;
+    g_translation_fish.y += ROT_INCREMENT * delta_time;
     g_rotation_slime.y += -1 * ROT_INCREMENT * delta_time;
-	g_rotation_water_stream.z += ROT_INCREMENT * delta_time;
-	g_rotation_ball.y += ROT_INCREMENT * delta_time;
+    g_rotation_water_stream.z += ROT_INCREMENT * delta_time;
+    g_rotation_ball.y += ROT_INCREMENT * delta_time;
 
     /* Model matrix reset */
-
     g_slime_matrix = glm::mat4(1.0f);
     g_fish_matrix = glm::mat4(1.0f);
     g_mars_matrix = glm::mat4(1.0f);
     g_water_stream_matrix = glm::mat4(1.0f);
-	g_ball_matrix = glm::mat4(1.0f);
+    g_ball_matrix = glm::mat4(1.0f);
 
     /* Transformations */
     //initialize positions
-    
     g_fish_matrix = glm::translate(g_fish_matrix, INIT_POS_FISH);
     g_slime_matrix = glm::translate(g_slime_matrix, INIT_POS_SLIME);
     g_mars_matrix = glm::translate(g_mars_matrix, INIT_POS_MARS);
     g_water_stream_matrix = glm::translate(g_water_stream_matrix, INIT_POS_WATER_STREAM);
-	g_ball_matrix = glm::translate(g_ball_matrix, INIT_POS_BALL);
-    
-    // Fish and water action
-    g_fish_matrix = glm::translate(g_water_stream_matrix, 
-            glm::vec3(-1*glm::cos(g_translation_fish.x), 
-            glm::sin(g_translation_fish.y)* glm::sin(g_translation_fish.y),
+    g_ball_matrix = glm::translate(g_ball_matrix, INIT_POS_BALL);
+
+    //Fish and water action
+    //Fish is translating with respect to the water stream
+    g_fish_matrix = glm::translate(g_water_stream_matrix,
+        glm::vec3(-1 * glm::cos(g_translation_fish.x),
+            glm::sin(g_translation_fish.y) * glm::sin(g_translation_fish.y),
             0.0f));
 
-    g_water_stream_matrix = glm::rotate(g_water_stream_matrix, 0.6f*glm::cos(g_rotation_water_stream.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    //Water stream is rotating according to cosine
+    g_water_stream_matrix = glm::rotate(g_water_stream_matrix, 0.6f * glm::cos(g_rotation_water_stream.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
     // Scaling
-	g_fish_matrix = glm::scale(g_fish_matrix, INIT_SCALE/glm::vec3(2.5f, 2.5f, 2.5f));
+    g_fish_matrix = glm::scale(g_fish_matrix, INIT_SCALE / glm::vec3(2.5f, 2.5f, 2.5f));
 
-	g_water_stream_matrix = glm::scale(g_water_stream_matrix, INIT_SCALE * glm::vec3(0.8f, 0.6f, 1.0f));
-	
-	g_slime_matrix = glm::scale(g_slime_matrix, INIT_SCALE/glm::vec3(7.0f, 7.0f, 2.5f));
+    g_water_stream_matrix = glm::scale(g_water_stream_matrix, INIT_SCALE * glm::vec3(0.8f, 0.6f, 1.0f));
+
+    g_slime_matrix = glm::scale(g_slime_matrix, INIT_SCALE / glm::vec3(7.0f, 7.0f, 2.5f));
 
     g_mars_matrix = glm::scale(g_mars_matrix, glm::vec3(2.0f, 2.0f, 2.0f) * INIT_SCALE);
 
-	g_ball_matrix = glm::scale(g_ball_matrix, glm::vec3(0.5f, 0.5f, 0.5f) * INIT_SCALE);
-    
+    g_ball_matrix = glm::scale(g_ball_matrix, glm::vec3(0.5f, 0.5f, 0.5f) * INIT_SCALE);
 
-    // Waits for a couple of ticks
+
+    // Waits for a couple seconds 
     if (ticks < wait_time)
     {
         g_slime_matrix = glm::scale(g_slime_matrix, glm::vec3(scale_factor, scale_factor, 1.0f));
     }
-    
+
     // slime becomes motivated
     if (ticks > wait_time)
     {
         g_slime_matrix = glm::scale(g_slime_matrix, glm::vec3(larger_scale_factor, larger_scale_factor, 1.0f));
         g_slime_matrix = glm::rotate(g_slime_matrix, g_rotation_slime.y, glm::vec3(0.0f, 1.0f, 0.0f));
     }
-    
 
     // Mars is beating
     g_mars_matrix = glm::scale(g_mars_matrix, glm::vec3(scale_factor, scale_factor, 1.0f));
-	g_ball_matrix = glm::rotate(g_ball_matrix, g_rotation_ball.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    g_ball_matrix = glm::rotate(g_ball_matrix, g_rotation_ball.y, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 
@@ -334,11 +329,11 @@ void render()
     glEnableVertexAttribArray(g_shader_program.get_tex_coordinate_attribute());
 
     // Bind texture
-	draw_object(g_fish_matrix, g_fish_id);
-	draw_object(g_slime_matrix, g_slime_id);
-	draw_object(g_mars_matrix, g_mars_id);
-	draw_object(g_water_stream_matrix, g_water_stream_id);
-	draw_object(g_ball_matrix, g_ball_id);
+    draw_object(g_fish_matrix, g_fish_id);
+    draw_object(g_slime_matrix, g_slime_id);
+    draw_object(g_mars_matrix, g_mars_id);
+    draw_object(g_water_stream_matrix, g_water_stream_id);
+    draw_object(g_ball_matrix, g_ball_id);
 
     // We disable two attribute arrays now
     glDisableVertexAttribArray(g_shader_program.get_position_attribute());
